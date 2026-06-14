@@ -109,6 +109,14 @@ DarkShift uses a three-phase detection engine:
 The engine intelligently detects existing dark themes, applies DarkShift only when necessary, and continuously adapts to theme changes in modern single-page applications.
 
 ---
+## Browser Support
+
+| Browser | Status |
+|----------|----------|
+| Chrome | ✅ Supported |
+| Edge | ✅ Supported |
+| Firefox | ⚠ Experimental |
+---
 
 ## 🔧 Installation
 
