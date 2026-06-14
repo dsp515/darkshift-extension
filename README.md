@@ -82,14 +82,17 @@ DarkShift works on all websites while providing an enhanced experience for Sales
 ## 📸 Screenshots
 
 ### Main Controls
+<img width="400" height="690" alt="Screenshot 2026-06-15 022020" src="https://github.com/user-attachments/assets/0175677f-ef61-47b1-bb2e-0d8855526c1f" />
 
 Manage dark mode globally or for the current website.
 
 ### Whitelist Management
+<img width="404" height="353" alt="Screenshot 2026-06-15 022042" src="https://github.com/user-attachments/assets/b4d82495-3ed4-43bb-9405-238980fb27e5" />
 
 Control websites that should remain unchanged.
 
 ### Settings
+<img width="404" height="442" alt="Screenshot 2026-06-15 022109" src="https://github.com/user-attachments/assets/172485e3-8a23-4847-844f-949ce9564af2" />
 
 Configure native dark detection, import/export settings, and scheduling.
 
