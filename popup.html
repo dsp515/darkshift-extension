@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DarkShift</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 320px;
+      background: #0f0f1a;
+      color: #e0e0f0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      user-select: none;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 14px 16px;
+      background: #1a1a2e;
+      border-bottom: 1px solid #2a2a46;
+    }
+    .logo  { font-size: 24px; line-height: 1; }
+    .title { font-size: 15px; font-weight: 700; color: #c4a8ff; letter-spacing: 0.4px; }
+    .tagline { font-size: 10px; color: #555; margin-top: 2px; }
+    .header-right { margin-left: auto; display: flex; gap: 6px; }
+    .icon-btn {
+      background: #1e1e38; border: 1px solid #2a2a46;
+      color: #888; border-radius: 6px; padding: 4px 8px;
+      font-size: 12px; cursor: pointer; transition: background 0.15s, color 0.15s;
+    }
+    .icon-btn:hover { background: #252540; color: #c4a8ff; }
+    .icon-btn.active { color: #8b5fe8; border-color: #6c3fd4; }
+
+    /* ── Native dark badge ── */
+    .native-dark-badge {
+      display: none;
+      margin: 8px 16px 0;
+      padding: 6px 10px;
+      background: #1a2a1a;
+      border: 1px solid #2a4a2a;
+      border-radius: 6px;
+      font-size: 10px;
+      color: #5a9a5a;
+      align-items: center;
+      gap: 6px;
+    }
+    .native-dark-badge.show { display: flex; }
+
+    /* ── Section label ── */
+    .section-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #444;
+      text-transform: uppercase;
+      padding: 10px 16px 4px;
+    }
+
+    /* ── Toggle rows ── */
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      border-bottom: 1px solid #16162a;
+      transition: background 0.15s;
+    }
+    .row:hover { background: #141422; }
+    .row.disabled { opacity: 0.45; pointer-events: none; }
+
+    .label-group { display: flex; flex-direction: column; gap: 3px; }
+    .label-title { font-size: 13px; font-weight: 600; color: #d0d0ea; }
+    .label-sub   { font-size: 10px; color: #555; max-width: 200px;
+                   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .label-sub.site { color: #7a7acc; }
+
+    /* ── Toggle switch ── */
+    .switch { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+    .switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .track {
+      position: absolute; inset: 0;
+      background: #252540;
+      border-radius: 24px;
+      border: 1px solid #333360;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .track::after {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      top: 2px; left: 2px;
+      background: #4a4a6a;
+      border-radius: 50%;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .switch input:checked + .track { background: #6c3fd4; border-color: #8b5fe8; }
+    .switch input:checked + .track::after { background: #fff; transform: translateX(20px); }
+
+    /* ── Sliders ── */
+    .slider-row {
+      padding: 10px 16px;
+      border-bottom: 1px solid #16162a;
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .slider-title { font-size: 12px; font-weight: 600; color: #d0d0ea; }
+    .slider-value { font-size: 12px; color: #8b5fe8; font-weight: 700; }
+
+    input[type=range] {
+      width: 100%;
+      appearance: none;
+      height: 4px;
+      border-radius: 4px;
+      background: #2a2a46;
+      outline: none;
+      cursor: pointer;
+      margin-bottom: 2px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      appearance: none;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: #6c3fd4;
+      border: 2px solid #8b5fe8;
+    }
+
+    /* Color temp gradient track */
+    #colorTempSlider {
+      background: linear-gradient(to right, #a8c8ff, #fff5e0, #ffb347);
+    }
+
+    /* ── Schedule ── */
+    .schedule-times {
+      display: flex;
+      gap: 8px;
+      padding: 8px 16px 12px;
+      border-bottom: 1px solid #16162a;
+    }
+    .time-group { flex: 1; }
+    .time-label { font-size: 9px; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    input[type=time] {
+      width: 100%;
+      background: #1a1a30;
+      border: 1px solid #2a2a46;
+      color: #8b5fe8;
+      border-radius: 6px;
+      padding: 5px 8px;
+      font-size: 13px;
+      font-weight: 700;
+      outline: none;
+    }
+    input[type=time]:focus { border-color: #6c3fd4; }
+
+    /* ── Whitelist panel ── */
+    .panel {
+      display: none;
+      border-top: 1px solid #2a2a46;
+    }
+    .panel.show { display: block; }
+    .panel-inner { padding: 10px 16px; }
+    .panel-title { font-size: 11px; font-weight: 700; color: #c4a8ff; margin-bottom: 8px; }
+    .whitelist-list { max-height: 120px; overflow-y: auto; }
+    .wl-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 5px 0; border-bottom: 1px solid #1a1a2e; font-size: 11px; color: #aaa;
+    }
+    .wl-item:last-child { border-bottom: none; }
+    .wl-remove {
+      background: none; border: none; color: #6c3fd4; cursor: pointer;
+      font-size: 14px; line-height: 1; padding: 0 4px;
+    }
+    .wl-remove:hover { color: #e55; }
+    .wl-empty { font-size: 11px; color: #444; padding: 4px 0; }
+
+    /* ── Export/Import panel ── */
+    .export-panel { padding: 10px 16px; }
+    .export-panel .btn-row { display: flex; gap: 8px; margin-top: 6px; }
+    .export-panel button {
+      flex: 1; padding: 7px; border: 1px solid #2a2a46;
+      background: #1a1a30; color: #c4a8ff; border-radius: 6px;
+      font-size: 11px; font-weight: 700; cursor: pointer; transition: background 0.15s;
+    }
+    .export-panel button:hover { background: #252540; }
+    .export-panel input[type=file] { display: none; }
+    .export-panel .hint { font-size: 10px; color: #444; margin-top: 4px; }
+
+    /* ── Tab nav ── */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #2a2a46;
+      background: #0f0f1a;
+    }
+    .tab-btn {
+      flex: 1; padding: 8px 4px;
+      background: none; border: none; border-bottom: 2px solid transparent;
+      color: #555; font-size: 10px; font-weight: 700; cursor: pointer;
+      letter-spacing: 0.5px; text-transform: uppercase; transition: color 0.15s, border-color 0.15s;
+    }
+    .tab-btn.active { color: #c4a8ff; border-bottom-color: #6c3fd4; }
+
+    /* ── Tab content ── */
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    /* ── Ko-fi ── */
+    .kofi-btn {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      margin: 12px 16px; padding: 9px;
+      background: #ff5e5b; color: #fff; border-radius: 8px;
+      font-size: 12px; font-weight: 700; text-decoration: none;
+      transition: background 0.2s; cursor: pointer;
+    }
+    .kofi-btn:hover { background: #e04a48; }
+
+    /* ── Footer ── */
+    .footer {
+      padding: 6px 16px 10px; text-align: center;
+      font-size: 10px; color: #333; background: #08080f;
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
+      background: #1a1a30; border: 1px solid #6c3fd4; color: #c4a8ff;
+      padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 700;
+      opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <span class="logo">🌙</span>
+  <div>
+    <div class="title">DarkShift</div>
+    <div class="tagline">Dark mode for every site</div>
+  </div>
+</div>
+
+<!-- Tab nav -->
+<div class="tabs">
+  <button class="tab-btn active" data-tab="main">Main</button>
+  <button class="tab-btn" data-tab="whitelist">Whitelist</button>
+  <button class="tab-btn" data-tab="settings">Settings</button>
+</div>
+
+<!-- ═══ MAIN TAB ═══ -->
+<div class="tab-pane active" id="tab-main">
+
+  <!-- Native dark badge -->
+  <div class="native-dark-badge" id="nativeDarkBadge">
+    ✅ Page has its own dark mode — DarkShift skipped
+  </div>
+
+  <div class="section-label">Dark Mode</div>
+
+  <div class="row">
+    <div class="label-group">
+      <div class="label-title">Global</div>
+      <div class="label-sub">Apply to all websites</div>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="globalToggle">
+      <span class="track"></span>
+    </label>
+  </div>
+
+  <div class="row">
+    <div class="label-group">
+      <div class="label-title">This Site</div>
+      <div class="label-sub site" id="siteName">—</div>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="siteToggle">
+      <span class="track"></span>
+    </label>
+  </div>
+
+  <div class="section-label">Display</div>
+
+  <div class="slider-row">
+    <div class="slider-header">
+      <span class="slider-title">☀️ Brightness</span>
+      <span class="slider-value" id="brightnessVal">100%</span>
+    </div>
+    <input type="range" id="brightnessSlider" min="50" max="130" value="100">
+  </div>
+
+  <div class="slider-row">
+    <div class="slider-header">
+      <span class="slider-title">◑ Contrast</span>
+      <span class="slider-value" id="contrastVal">100%</span>
+    </div>
+    <input type="range" id="contrastSlider" min="70" max="150" value="100">
+  </div>
+
+  <div class="slider-row">
+    <div class="slider-header">
+      <span class="slider-title">🌡️ Color Temperature</span>
+      <span class="slider-value" id="colorTempVal">Neutral</span>
+    </div>
+    <input type="range" id="colorTempSlider" min="0" max="100" value="50">
+  </div>
+
+  <div class="section-label">Schedule</div>
+
+  <div class="row">
+    <div class="label-group">
+      <div class="label-title">⏰ Auto-Schedule</div>
+      <div class="label-sub">Enable dark mode by time</div>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="scheduleToggle">
+      <span class="track"></span>
+    </label>
+  </div>
+
+  <div class="schedule-times" id="scheduleTimes" style="display:none">
+    <div class="time-group">
+      <div class="time-label">Dark From</div>
+      <input type="time" id="scheduleFrom" value="21:00">
+    </div>
+    <div class="time-group">
+      <div class="time-label">Light From</div>
+      <input type="time" id="scheduleTo" value="07:00">
+    </div>
+  </div>
+
+</div><!-- /tab-main -->
+
+<!-- ═══ WHITELIST TAB ═══ -->
+<div class="tab-pane" id="tab-whitelist">
+  <div class="panel-inner">
+    <div class="panel-title">🚫 Disabled Sites</div>
+    <div class="whitelist-list" id="whitelistList">
+      <div class="wl-empty">No sites disabled yet.</div>
+    </div>
+    <br>
+    <div class="panel-title">✅ Force-Enabled Sites</div>
+    <div class="whitelist-list" id="enabledList">
+      <div class="wl-empty">No sites force-enabled yet.</div>
+    </div>
+    <br>
+    <div style="font-size:10px;color:#444">Use the "This Site" toggle on the Main tab to add/remove sites.</div>
+  </div>
+</div>
+
+<!-- ═══ SETTINGS TAB ═══ -->
+<div class="tab-pane" id="tab-settings">
+  <div class="panel-inner">
+
+    <div class="row" style="padding:10px 0">
+      <div class="label-group">
+        <div class="label-title">Skip Native Dark Pages</div>
+        <div class="label-sub">Don't override sites with built-in dark mode</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="skipNativeDark" checked>
+        <span class="track"></span>
+      </label>
+    </div>
+
+    <div class="panel-title" style="margin-top:8px">Export / Import Settings</div>
+    <div class="export-panel">
+      <div class="hint">Back up or sync your settings across devices.</div>
+      <div class="btn-row">
+        <button id="exportBtn">⬇ Export</button>
+        <button id="importBtn">⬆ Import</button>
+        <input type="file" id="importFile" accept=".json">
+      </div>
+    </div>
+
+    <a class="kofi-btn" href="https://ko-fi.com/YOUR_KOFI_ID" target="_blank">
+      ☕ Support DarkShift on Ko-fi
+    </a>
+
+  </div>
+</div>
+
+<div class="footer">DarkShift v2 · Free forever · No account</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="popup.js"></script>
+</body>
+</html>
