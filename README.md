@@ -106,6 +106,8 @@ DarkShift uses a three-phase detection engine:
 3. SPA Theme Monitoring
 
 <img width="1150" height="1368" alt="workflow -darkshift" src="https://github.com/user-attachments/assets/fd307232-f771-4476-ab63-d0cd5855ae02" />
+The engine intelligently detects existing dark themes, applies DarkShift only when necessary, and continuously adapts to theme changes in modern single-page applications.
+
 ---
 
 ## 🔧 Installation
